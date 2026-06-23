@@ -1,5 +1,7 @@
 package org.example;
 
+import java.util.Scanner;
+
 public class Main {
 
     public static class Feet {
@@ -30,8 +32,16 @@ public class Main {
         }
     }
     static void main() {
-        Feet firstValue = new Feet(1.0);
-        Feet secondValue = new Feet(1.0);
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter first feet value : ");
+        double first = sc.nextDouble();
+        System.out.print("Enter first feet value : ");
+        double second = sc.nextDouble();
+
+        Feet firstValue = new Feet(first);
+        Feet secondValue = new Feet(second);
 
         boolean isEqual = firstValue.equals(secondValue);
 
