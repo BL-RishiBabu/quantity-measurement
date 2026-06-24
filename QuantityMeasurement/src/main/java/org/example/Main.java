@@ -12,7 +12,7 @@ public class Main {
         return length1.add(length2);
     }
 
-    public static Length demonstrateLengthAddition(Length length1, Length length2, Length.LengthUnit targetUnit) {
+    public static Length demonstrateLengthAddition(Length length1, Length length2, LengthUnit targetUnit) {
         if (length1 == null) throw new IllegalArgumentException("First operand cannot be null");
         return length1.add(length2, targetUnit);
     }
@@ -26,13 +26,13 @@ public class Main {
                 double val1 = scanner.nextDouble();
                 if (val1 == -1) break;
                 System.out.print("Enter first unit (FEET, INCHES, YARDS, CENTIMETERS): ");
-                Length.LengthUnit unit1 = Length.LengthUnit.valueOf(scanner.next().toUpperCase());
+                LengthUnit unit1 = LengthUnit.valueOf(scanner.next().toUpperCase());
                 Length length1 = new Length(val1, unit1);
 
                 System.out.print("Enter second value: ");
                 double val2 = scanner.nextDouble();
                 System.out.print("Enter second unit: ");
-                Length.LengthUnit unit2 = Length.LengthUnit.valueOf(scanner.next().toUpperCase());
+                LengthUnit unit2 = LengthUnit.valueOf(scanner.next().toUpperCase());
                 Length length2 = new Length(val2, unit2);
 
                 System.out.print("Enter an explicit target unit (or type 'DEFAULT' to use first unit): ");
@@ -41,7 +41,7 @@ public class Main {
                 Length result;
                 if (targetInput.equals("DEFAULT")) result = demonstrateLengthAddition(length1, length2);
                 else {
-                    Length.LengthUnit targetUnit = Length.LengthUnit.valueOf(targetInput);
+                    LengthUnit targetUnit = LengthUnit.valueOf(targetInput);
                     result = demonstrateLengthAddition(length1, length2, targetUnit);
                 }
 
