@@ -39,16 +39,28 @@ public class Length {
         return Math.round(rawConverted * 100.0) / 100.0;
     }
 
-    public Length add(Length thatLength) {
-        if (thatLength == null) {
-            throw new IllegalArgumentException("Operand length cannot be null");
-        }
+    private Length addAndConvert(Length thatLength, LengthUnit targetUnit) {
+        if (thatLength == null) throw new IllegalArgumentException("Operand length cannot be null");
+        if (targetUnit == null) throw new IllegalArgumentException("Target unit cannot be null");
 
-        double firstLengthInInches = this.convertToBaseUnit();
-        double secondLengthInInches = thatLength.convertToBaseUnit();
-        double sumInInches = firstLengthInInches + secondLengthInInches;
-        double finalValue = convertFromBaseToTargetUnit(sumInInches, this.unit);
-        return new Length(finalValue, this.unit);
+        double sumInInches = this.convertToBaseUnit() + thatLength.convertToBaseUnit();
+        double finalValue = convertFromBaseToTargetUnit(sumInInches, targetUnit);
+
+        return new Length(finalValue, targetUnit);
+    }
+
+    public Length add(Length thatLength) {
+        return addAndConvert(thatLength, this.unit);
+    }
+
+    public Length add(Length thatLength, LengthUnit targetUnit) {
+        return addAndConvert(thatLength, targetUnit);
+    }
+
+    public Length convertTo(LengthUnit targetUnit) {
+        if (targetUnit == null) throw new IllegalArgumentException("Target unit cannot be null");
+        double inches = convertToBaseUnit();
+        return new Length(convertFromBaseToTargetUnit(inches, targetUnit), targetUnit);
     }
 
     @Override
