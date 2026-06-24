@@ -1,9 +1,8 @@
 package org.example;
 
 public class Length {
-    // Instance variables
-    private double value;
-    private LengthUnit unit;
+    private final double value;
+    private final LengthUnit unit;
 
     public enum LengthUnit {
         FEET(12.0),
@@ -24,17 +23,19 @@ public class Length {
 
     public Length(double value, LengthUnit unit) {
         if (unit == null) throw new IllegalArgumentException("Unit cannot be null");
+        if (Double.isNaN(value) || Double.isInfinite(value)) throw new IllegalArgumentException("Value must be a finite number");
         this.value = value;
         this.unit = unit;
     }
 
     private double convertToBaseUnit() {
-        return this.value * this.unit.getConversionFactor();
+        double rawInches = this.value * this.unit.getConversionFactor();
+        return Math.round(rawInches * 100.0) / 100.0;
     }
 
-    public boolean compare(Length thatLength) {
+    private boolean compare(Length thatLength) {
         if (thatLength == null) return false;
-        return Math.abs(this.convertToBaseUnit() - thatLength.convertToBaseUnit()) < 0.0001;
+        return Double.compare(this.convertToBaseUnit(), thatLength.convertToBaseUnit()) == 0;
     }
 
     @Override
@@ -50,7 +51,20 @@ public class Length {
         return Double.hashCode(convertToBaseUnit());
     }
 
-    public static void main(String[] args) {
+    public Length convertTo(LengthUnit targetUnit) {
+        if (targetUnit == null) throw new IllegalArgumentException("Target unit cannot be null");
+        double inches = this.value * this.unit.getConversionFactor();
+        double rawConverted = inches / targetUnit.getConversionFactor();
+        double roundedValue = Math.round(rawConverted * 100.0) / 100.0;
+        return new Length(roundedValue, targetUnit);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%.2f %s", this.value, this.unit.name());
+    }
+
+    static void main() {
         Length length1 = new Length(1.0, LengthUnit.FEET);
         Length length2 = new Length(12.0, LengthUnit.INCHES);
         System.out.println("Are lengths equal? " + length1.equals(length2));
