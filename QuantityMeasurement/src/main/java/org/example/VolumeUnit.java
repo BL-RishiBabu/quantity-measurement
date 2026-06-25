@@ -1,15 +1,16 @@
 package org.example;
 
-public enum LengthUnit implements IMeasurable {
-    FEET(12.0),
-    INCHES(1.0),
-    YARDS(36.0),
-    CENTIMETERS(0.393701);
+public enum VolumeUnit implements IMeasurable {
+    LITRE(1.0, "Litre"),
+    MILLILITRE(0.001, "Millilitre"),
+    GALLON(3.78541, "Gallon");
 
     private final double conversionFactor;
+    private final String unitName;
 
-    LengthUnit(double conversionFactor) {
+    VolumeUnit(double conversionFactor, String unitName) {
         this.conversionFactor = conversionFactor;
+        this.unitName = unitName;
     }
 
     @Override
@@ -24,13 +25,11 @@ public enum LengthUnit implements IMeasurable {
 
     @Override
     public double convertFromBaseUnit(double baseValue) {
-        double value = baseValue / this.conversionFactor;
-        return Math.round(value * 100.0) / 100.0;
+        return baseValue / this.conversionFactor;
     }
 
-    // --- FIX: Added the missing interface method implementation ---
     @Override
     public String getUnitName() {
-        return this.name(); // Returns "FEET", "INCHES", etc.
+        return this.unitName;
     }
 }
