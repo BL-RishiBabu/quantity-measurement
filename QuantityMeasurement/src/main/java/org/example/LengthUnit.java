@@ -1,10 +1,10 @@
 package org.example;
 
-public enum LengthUnit {
-    FEET(1.0),
-    INCHES(1.0 / 12.0),
-    YARDS(3.0),
-    CENTIMETERS(1.0 / 30.48);
+public enum LengthUnit implements IMeasurable {
+    FEET(12.0),
+    INCHES(1.0),
+    YARDS(36.0),
+    CENTIMETERS(0.393701);
 
     private final double conversionFactor;
 
@@ -12,17 +12,19 @@ public enum LengthUnit {
         this.conversionFactor = conversionFactor;
     }
 
+    @Override
     public double getConversionFactor() {
         return this.conversionFactor;
     }
 
+    @Override
     public double convertToBaseUnit(double value) {
-        double converted = value * this.conversionFactor;
-        return Math.round(converted * 100.0) / 100.0;
+        return value * this.conversionFactor;
     }
 
+    @Override
     public double convertFromBaseUnit(double baseValue) {
-        double converted = baseValue / this.conversionFactor;
-        return Math.round(converted * 100.0) / 100.0;
+        double value = baseValue / this.conversionFactor;
+        return Math.round(value * 100.0) / 100.0;
     }
 }
