@@ -28,9 +28,8 @@ public enum LengthUnit implements IMeasurable {
         return Math.round(value * 100.0) / 100.0;
     }
 
-    // --- FIX: Added the missing interface method implementation ---
     @Override
     public String getUnitName() {
-        return this.name(); // Returns "FEET", "INCHES", etc.
+        return this.name();
     }
 }
