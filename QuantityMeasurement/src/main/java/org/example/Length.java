@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Length {
     private final double value;
-    private final LengthUnit unit;
+    private final LengthUnit unit; 
 
     public Length(double value, LengthUnit unit) {
         if (unit == null) throw new IllegalArgumentException("Unit cannot be null");
