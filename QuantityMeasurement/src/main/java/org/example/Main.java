@@ -1,11 +1,14 @@
 package org.example;
-
 import java.util.Scanner;
 
 public class Main {
     static void main() {
+        IQuantityMeasurementRepository repository = QuantityMeasurementCacheRepository.getInstance();
+        IQuantityMeasurementService service = new QuantityMeasurementServiceImpl(repository);
+        QuantityMeasurementController controller = new QuantityMeasurementController(service);
+
         Scanner scanner = new Scanner(System.in);
-        System.out.println("=== Advanced Quantity Measurement System Dashboard ===");
+        System.out.println("=== UC15 Architecture Multi-Tier System Dashboard ===");
 
         while (true) {
             try {
@@ -24,56 +27,50 @@ public class Main {
                     default -> "";
                 };
 
-                if (unitOptions.isEmpty()) {
-                    System.out.println("❌ Invalid category choice.");
-                    continue;
-                }
-
                 System.out.print("Enter first value: ");
                 double val1 = scanner.nextDouble();
                 System.out.print("Enter first unit string " + unitOptions + ": ");
-                String unitStr1 = scanner.next().toUpperCase();
+                String unitStr1 = scanner.next();
 
-                if (opChoice == 5) { // Pure conversion pathway optimization
-                    System.out.print("Enter conversion target unit " + unitOptions + ": ");
-                    String targetStr = scanner.next().toUpperCase();
-                    if (categoryChoice == 4) {
-                        Quantity<TemperatureUnit> temp = new Quantity<>(val1, TemperatureUnit.valueOf(unitStr1));
-                        System.out.println("\n>>> [Conversion Output]: " + temp.convertTo(TemperatureUnit.valueOf(targetStr)));
-                    }
+                QuantityDTO d1 = new QuantityDTO(val1, unitStr1);
+
+                if (opChoice == 5) {
+                    System.out.print("Enter targeted destination unit: ");
+                    String targetUnit = scanner.next();
+                    QuantityDTO res = controller.performConversion(d1, targetUnit);
+                    System.out.println("\n>>> [Conversion Output Result]: " + res);
                     continue;
                 }
 
                 System.out.print("Enter second value: ");
                 double val2 = scanner.nextDouble();
                 System.out.print("Enter second unit string " + unitOptions + ": ");
-                String unitStr2 = scanner.next().toUpperCase();
+                String unitStr2 = scanner.next();
 
-                if (categoryChoice == 4) {
-                    Quantity<TemperatureUnit> q1 = new Quantity<>(val1, TemperatureUnit.valueOf(unitStr1));
-                    Quantity<TemperatureUnit> q2 = new Quantity<>(val2, TemperatureUnit.valueOf(unitStr2));
+                QuantityDTO d2 = new QuantityDTO(val2, unitStr2);
 
-                    switch (opChoice) {
-                        case 1 -> System.out.println("\n>>> [Equality Check Output]: " + q1.equals(q2));
-                        case 2 -> q1.add(q2);
-                        case 3 -> q1.subtract(q2);
-                        case 4 -> q1.divide(q2);
+                switch (opChoice) {
+                    case 1 -> System.out.println("\n>>> [Equality Check Output]: " + controller.performComparison(d1, d2));
+                    case 2, 3 -> {
+                        System.out.print("Enter explicit target unit or type 'DEFAULT' (uses first unit format): ");
+                        String tInput = scanner.next();
+                        String actualTarget = tInput.equalsIgnoreCase("DEFAULT") ? d1.getUnit() : tInput;
+
+                        if (opChoice == 2) System.out.println("\n>>> [Addition Output]: " + controller.performAddition(d1, d2, actualTarget));
+                        else System.out.println("\n>>> [Subtraction Output]: " + controller.performSubtraction(d1, d2, actualTarget));
                     }
-                } else {
-                    System.out.println("🔄 Non-temperature categories processed normally via standard operational handlers.");
+                    case 4 -> System.out.println("\n>>> [Division Scalar Ratio Output]: " + controller.performDivision(d1, d2));
+                    default -> System.out.println("❌ Operational choice not recognized.");
                 }
 
-            } catch (UnsupportedOperationException e) {
-                System.out.println("\n>>> Cannot compute operation: " + e.getMessage());
-            } catch (IllegalArgumentException e) {
-                System.out.println("❌ Entry validation error matching unit values.");
-                scanner.nextLine();
+            } catch (QuantityMeasurementException | UnsupportedOperationException e) {
+                System.out.println("\n>>> Caught Expected Boundary Violation Message: " + e.getMessage());
             } catch (Exception e) {
-                System.out.println("❌ Error processing execution parameters.");
+                System.out.println("❌ Layer processing error: " + e.getMessage());
                 scanner.nextLine();
             }
         }
-        System.out.println("Exiting Application. Goodbye!");
+        System.out.println("Application execution loops completed cleanly.");
         scanner.close();
     }
 }
